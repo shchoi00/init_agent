@@ -1,58 +1,67 @@
-# init_agent
+# init_agent — Codex Branch
 
-AI 에이전트별 개발 환경 세팅 모음.
-각 에이전트마다 전용 브랜치가 있으며, 브랜치를 클론하거나 체크아웃해서 바로 사용합니다.
+OpenAI Codex 환경 세팅.
+원본: [shchoi00/init_codex](https://github.com/shchoi00/init_codex)
 
----
-
-## 브랜치 구조
-
-| 브랜치 | 에이전트 | 주요 내용 |
-|---|---|---|
-| [`claude`](../../tree/claude) | Claude Code | `CLAUDE.md` 행동 지침, 공식 스킬 설치, `settings.json` |
-| [`codex`](../../tree/codex) | OpenAI Codex | 별칭 설정, 서브에이전트, Karpathy 베이스라인 |
+> 전체 구조는 [main 브랜치](../../tree/main) 참조.
 
 ---
 
-## 사용법
+## 목표
 
-### 특정 에이전트 세팅만 받기
+이 브랜치를 클론하면 Codex가:
 
-```sh
-# Claude Code 세팅
-git clone -b claude https://github.com/shchoi00/init_agent.git
-cd init_agent
+1. `AGENTS.md`를 읽고 행동 지침을 로드한다.
+2. `codex --sandbox danger-full-access` 별칭을 쉘에 추가한다.
+3. AI/ML 서브에이전트를 `~/.codex/agents/`에 설치한다.
+4. 모든 변경사항을 검증한다.
 
-# Codex 세팅
-git clone -b codex https://github.com/shchoi00/init_agent.git
-cd init_agent
-```
+---
 
-### 전체 받기
+## 1. 별칭 설정
 
 ```sh
-git clone https://github.com/shchoi00/init_agent.git
-cd init_agent
+# zsh
+echo 'alias codex="codex --sandbox danger-full-access"' >> ~/.zshrc && source ~/.zshrc
 
-# 브랜치 목록 확인
-git branch -a
+# bash
+echo 'alias codex="codex --sandbox danger-full-access"' >> ~/.bashrc && source ~/.bashrc
 ```
 
 ---
 
-## 공통 철학
+## 2. 서브에이전트 설치
 
-모든 브랜치는 아래 원칙을 공유합니다. (Karpathy-inspired)
+[VoltAgent/awesome-codex-subagents](https://github.com/VoltAgent/awesome-codex-subagents) 기반.
 
-1. **코딩 전 먼저 생각** — 컨텍스트 파악 후 계획 수립
-2. **단순함 우선** — 가장 단순하고 올바른 해결책
-3. **최소 변경** — 필요한 것만, 관련 없는 코드 건드리지 않음
-4. **검증 가능한 성공** — 완료 선언 전 반드시 확인
-5. **에이전트 신중하게** — 위험 감소 또는 속도 향상 시에만 위임
+```sh
+mkdir -p ~/.codex/agents
+
+# AI/ML 에이전트
+for agent in ai-engineer llm-architect machine-learning-engineer ml-engineer mlops-engineer nlp-engineer data-engineer data-scientist prompt-engineer; do
+    cp categories/05-data-ai/${agent}.toml ~/.codex/agents/ 2>/dev/null || true
+done
+
+# 코드 품질
+for agent in python-pro reviewer debugger; do
+    cp categories/02-language-specialists/${agent}.toml ~/.codex/agents/ 2>/dev/null || true
+    cp categories/04-quality-security/${agent}.toml ~/.codex/agents/ 2>/dev/null || true
+done
+```
+
+---
+
+## 3. 검증
+
+```sh
+command -v codex
+alias codex
+ls ~/.codex/agents/
+```
 
 ---
 
 ## 참고
 
-- [VoltAgent/awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills) — Claude 스킬 목록
-- [shchoi00/init_codex](https://github.com/shchoi00/init_codex) — Codex 원본 레포
+- [shchoi00/init_codex](https://github.com/shchoi00/init_codex) — 원본 레포
+- [VoltAgent/awesome-codex-subagents](https://github.com/VoltAgent/awesome-codex-subagents) — 서브에이전트 목록
