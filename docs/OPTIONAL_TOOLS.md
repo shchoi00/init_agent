@@ -9,6 +9,7 @@ This file tracks optional tools that are useful after the baseline Codex setup.
 3. Project-local hooks
 4. GitHub tooling
 5. Browser or Playwright workflow
+6. OMX, only when a heavier workflow layer is useful
 
 ## Rationale
 
@@ -18,6 +19,7 @@ These tools map to the current Codex customization surfaces:
 - Skills are the right surface for repeated task workflows. Codex loads only the skill metadata up front, then reads `SKILL.md` when the skill is selected.
 - Hooks are the right surface for lifecycle checks around tool calls. The included hook template follows the documented `[[hooks.PreToolUse]]` shape for Bash commands.
 - Subagents are still useful, but optional fields such as `model` and `sandbox_mode` inherit from the parent session when omitted. This is why the baseline installer removes hard-coded model pins from installed subagents.
+- OMX is a third-party workflow layer on top of Codex CLI. Keep it explicit because it needs Node.js 20+, npm, and a deliberate `user` or `project` setup scope. The installer can bootstrap Node.js locally under `~/.local/share/init_agent/node`.
 
 References:
 
@@ -25,6 +27,7 @@ References:
 - Skills: https://developers.openai.com/codex/skills
 - Hooks: https://developers.openai.com/codex/hooks
 - Subagents: https://developers.openai.com/codex/subagents
+- OMX: https://github.com/Yeachan-Heo/oh-my-codex
 
 ## OpenAI Developer Docs MCP
 
@@ -103,8 +106,59 @@ Useful project targets:
 physicalai-hdmap-pipeline/viewer/
 ```
 
+## OMX Workflow Layer
+
+Use OMX when the task benefits from a heavier orchestration layer around Codex:
+
+- durable planning and execution flows
+- `.omx/` project state, logs, and plans
+- named worktree launches for safer parallel work
+- team-style tmux workflows
+
+Do not install it as part of the lightweight default setup. It has a Node.js 20+ and npm dependency, and setup scope matters. If Node.js 20+ is missing, `install_optional_tools.sh omx` installs a local Node.js runtime under `~/.local/share/init_agent/node` and links `node`, `npm`, and `npx` into `~/.local/bin`.
+
+Install:
+
+```sh
+bash install_optional_tools.sh omx
+```
+
+Default behavior:
+
+1. Install local Node.js 22.x when Node.js 20+ is missing.
+2. Install `oh-my-codex` with npm into `~/.local`.
+3. Run `omx setup --scope user --plugin`.
+4. Run `omx doctor`.
+
+Override setup scope deliberately when needed:
+
+```sh
+OMX_SETUP_SCOPE=project bash install_optional_tools.sh omx
+OMX_SETUP_MODE=legacy bash install_optional_tools.sh omx
+OMX_SKIP_SETUP=1 bash install_optional_tools.sh omx
+```
+
+Smoke test:
+
+```sh
+omx doctor
+omx exec --skip-git-repo-check -C . "Reply with exactly OMX-EXEC-OK"
+```
+
+Recommended launch from a git repo when isolation matters:
+
+```sh
+omx --worktree=feat/task --madmax --xhigh
+```
+
+Treat `--madmax` as a trusted-repo mode because it maps to a less restricted Codex runtime.
+
+Reference: https://github.com/Yeachan-Heo/oh-my-codex
+
 ## Install Everything
 
 ```sh
 bash install_optional_tools.sh all
 ```
+
+`all` intentionally excludes OMX. Install OMX explicitly with `bash install_optional_tools.sh omx`.

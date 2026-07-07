@@ -101,6 +101,13 @@ bash install_optional_tools.sh all
 2. PhysicalAI/HD map 프로젝트 워크플로우 skill 템플릿
 3. 프로젝트 로컬 hook/config 템플릿
 
+OMX는 Node.js 20+ 의존성과 setup scope 선택이 필요하므로 별도로 설치한다.
+Node.js가 없으면 사용자 로컬 경로에 자동 설치하고, 기본값으로 user/plugin setup과 doctor까지 실행한다.
+
+```sh
+bash install_optional_tools.sh omx
+```
+
 자세한 내용은 [`docs/OPTIONAL_TOOLS.md`](docs/OPTIONAL_TOOLS.md)를 본다.
 
 ---
