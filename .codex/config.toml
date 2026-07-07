@@ -1,0 +1,11 @@
+# Project-local Codex configuration template.
+# Copy to .codex/config.toml in a trusted repo.
+
+[[hooks.PreToolUse]]
+matcher = "^Bash$"
+
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = 'python3 "$(git rev-parse --show-toplevel)/.codex/hooks/pre_tool_use_policy.py"'
+timeout = 10
+statusMessage = "Checking shell command safety"
