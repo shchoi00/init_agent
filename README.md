@@ -1,118 +1,110 @@
-# init_agent — Codex Branch
+# init_agent — Codex Onboarding
 
-OpenAI Codex 환경 세팅.
-원본: [shchoi00/init_codex](https://github.com/shchoi00/init_codex)
+Codex를 처음 설정하거나 오래된 설정을 다시 점검할 때 사용하는 대화형
+onboarding 저장소입니다.
 
-> 전체 구조는 [main 브랜치](../../tree/main) 참조.
+이 저장소의 목적은 설정을 무조건 자동 설치하는 것이 아닙니다. Codex가
+현재 환경을 읽기 전용으로 진단하고, 각 설정의 의미와 선택지를 먼저 설명한
+다음, 사용자가 선택한 것만 적용하게 합니다.
 
----
-
-## 목표
-
-이 브랜치를 클론하면 Codex가:
-
-1. `AGENTS.md`를 읽고 행동 지침을 로드한다.
-2. `codex --sandbox danger-full-access` 별칭을 쉘에 추가한다.
-3. AI/ML 서브에이전트를 `~/.codex/agents/`에 설치한다.
-4. 모든 변경사항을 검증한다.
-
----
-
-## 빠른 설치
+## 시작하기
 
 ```sh
 git clone -b codex https://github.com/shchoi00/init_agent.git
 cd init_agent
-bash install_codex.sh
+codex --dangerously-bypass-approvals-and-sandbox
 ```
 
-설치 스크립트는 아래 작업을 수행한다.
+Codex는 루트의 `AGENTS.md`를 자동으로 읽습니다. 첫 메시지는 간단하게
+다음처럼 입력하면 됩니다.
 
-1. 현재 쉘 설정 파일에 Codex 별칭을 중복 없이 추가한다.
-2. `VoltAgent/awesome-codex-subagents`에서 필요한 `.toml` 파일을 받는다.
-3. 선택한 서브에이전트를 `~/.codex/agents/`에 설치한다.
-4. 서브에이전트의 `model = ...` 고정을 제거해서 현재 Codex 기본 모델을 상속하게 한다.
-5. `codex`, alias, 설치된 agent 목록을 검증한다.
+```text
+이 저장소의 onboarding 지침을 따라 내 Codex 설정을 점검해줘.
+먼저 현재 상태와 추천 설정을 설명하고, 변경할 파일을 보여준 뒤 적용해줘.
+```
 
----
+## 첫 실행에서 Codex가 하는 일
 
-## 1. 별칭 설정
+1. Codex 버전과 현재 전역 설정을 읽기 전용으로 확인
+2. 기존 `AGENTS.md`, config, alias, Skill, MCP, plugin 상태 확인
+3. 각 customization surface의 역할 설명
+4. 현재 설정에서 오래됐거나 충돌하는 부분 식별
+5. 최소 권장안과 선택 항목 분리
+6. 변경 대상과 보존할 설정을 먼저 제시
+7. 승인된 항목만 적용
+8. 새 Codex 프로세스로 실제 로딩 검증
+
+## 현재 기본 방향
+
+- 특정 프로젝트가 아닌 범용 research-engineering 사고 규칙
+- 사용자의 명시적 요청과 배경·예시를 엄격히 구분
+- 사실, 추론, 가설, 추측과 불확실성을 구분
+- 경쟁 가설, 반증 가능성, confounder, leakage와 평가 적합성 검토
+- 실제 검증 없이는 완료나 성능 향상을 주장하지 않음
+- 반복 절차가 생기기 전에는 Skill을 만들지 않음
+- 실제 외부 문맥 요구가 생기기 전에는 MCP를 추가하지 않음
+- 검토되지 않은 제3자 subagent pack을 기본 설치하지 않음
+
+## 권한 기본 선호
+
+이 저장소의 소유자는 신뢰하는 개인 환경에서 아래 실행 방식을 선호합니다.
 
 ```sh
-# zsh
-echo 'alias codex="codex --sandbox danger-full-access"' >> ~/.zshrc && source ~/.zshrc
-
-# bash
-echo 'alias codex="codex --sandbox danger-full-access"' >> ~/.bashrc && source ~/.bashrc
+codex --dangerously-bypass-approvals-and-sandbox
 ```
 
----
+이는 승인 요청과 sandbox를 모두 우회합니다. 위험을 숨기지는 않되, 이 선택을
+매번 되돌리려 하지 않습니다. 대신 Git 상태 확인, 정확한 대상 확인, 사용자
+변경 보존, 파괴적·외부 영향 작업 전 확인 같은 행동 규칙으로 보완합니다.
 
-## 2. 서브에이전트 설치
+편의를 위한 alias 예시는
+[`templates/shell/codex-aliases.sh`](templates/shell/codex-aliases.sh)에
+있습니다.
 
-[VoltAgent/awesome-codex-subagents](https://github.com/VoltAgent/awesome-codex-subagents) 기반.
-이 저장소에는 `categories/` 디렉터리를 직접 포함하지 않으므로, 먼저 서브에이전트 저장소를 받아야 한다.
+## 저장소 구조
 
-```sh
-git clone --depth 1 --branch add-categories https://github.com/VoltAgent/awesome-codex-subagents.git
-mkdir -p ~/.codex/agents
-
-# AI/ML 에이전트
-for agent in ai-engineer llm-architect machine-learning-engineer ml-engineer mlops-engineer nlp-engineer data-engineer data-scientist prompt-engineer; do
-    grep -v '^model = ' awesome-codex-subagents/categories/05-data-ai/${agent}.toml > ~/.codex/agents/${agent}.toml
-done
-
-# 코드 품질
-for agent in python-pro reviewer debugger; do
-    if [ -f awesome-codex-subagents/categories/02-language-specialists/${agent}.toml ]; then
-        grep -v '^model = ' awesome-codex-subagents/categories/02-language-specialists/${agent}.toml > ~/.codex/agents/${agent}.toml
-    else
-        grep -v '^model = ' awesome-codex-subagents/categories/04-quality-security/${agent}.toml > ~/.codex/agents/${agent}.toml
-    fi
-done
+```text
+.
+├── AGENTS.md                         # 첫 실행 agent의 onboarding 절차
+├── README.md                         # 사람용 시작 안내
+├── docs/
+│   ├── FIRST_RUN.md                  # 진단·설명·적용 순서
+│   └── CUSTOMIZATION.md              # 설정 수단별 역할과 선택 기준
+└── templates/
+    ├── global/
+    │   └── AGENTS.md                 # 설치할 범용 연구 행동 규칙
+    ├── config.toml                   # 보수적인 config 기준안
+    └── shell/
+        └── codex-aliases.sh          # bypass/default 실행 alias 예시
 ```
 
----
+## 중요한 구분
 
-## 3. 검증
+루트 `AGENTS.md`와 `templates/global/AGENTS.md`의 목적은 다릅니다.
 
-```sh
-command -v codex
-alias codex
-ls ~/.codex/agents/
-grep -R '^model = ' ~/.codex/agents/*.toml
+- 루트 `AGENTS.md`: 이 저장소에서 처음 설정을 안내하는 agent용 지침
+- `templates/global/AGENTS.md`: 사용자 홈의 `~/.codex/AGENTS.md`로
+  설치할 개인 행동 규칙
+
+루트 파일 자체를 전역 파일로 복사하면 안 됩니다.
+
+## 업데이트 원칙
+
+설정은 한 번에 완성하지 않습니다. 실제 사용 중 반복되는 실패가 생기면
+다음 기준으로 갱신합니다.
+
+```text
+반복되는 판단 오류       → global AGENTS.md
+저장소에만 해당하는 사실 → repository AGENTS.md
+반복되는 작업 절차       → Skill
+외부 시스템의 실시간 정보 → MCP/plugin
+기계적으로 검사 가능한 규칙 → test/linter/hook
 ```
 
-마지막 `grep` 명령이 아무것도 출력하지 않으면 서브에이전트가 특정 모델에 고정되지 않은 상태다.
+Codex의 최신 설정 구조는 공식 문서를 우선합니다.
 
----
-
-## 4. 선택 도구
-
-기본 설치 후에는 아래 도구를 추가하면 최신 문서 확인, 반복 워크플로우, 안전 체크가 편해진다.
-
-```sh
-bash install_optional_tools.sh all
-```
-
-포함 항목:
-
-1. OpenAI Developer Docs MCP
-2. PhysicalAI/HD map 프로젝트 워크플로우 skill 템플릿
-3. 프로젝트 로컬 hook/config 템플릿
-
-OMX는 Node.js 20+ 의존성과 setup scope 선택이 필요하므로 별도로 설치한다.
-Node.js가 없으면 사용자 로컬 경로에 자동 설치하고, 기본값으로 user/plugin setup과 doctor까지 실행한다.
-
-```sh
-bash install_optional_tools.sh omx
-```
-
-자세한 내용은 [`docs/OPTIONAL_TOOLS.md`](docs/OPTIONAL_TOOLS.md)를 본다.
-
----
-
-## 참고
-
-- [shchoi00/init_codex](https://github.com/shchoi00/init_codex) — 원본 레포
-- [VoltAgent/awesome-codex-subagents](https://github.com/VoltAgent/awesome-codex-subagents) — 서브에이전트 목록
+- [Codex customization](https://learn.chatgpt.com/docs/customization/overview)
+- [AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
+- [Codex configuration](https://learn.chatgpt.com/docs/config-file/config-basic)
+- [Skills](https://learn.chatgpt.com/docs/build-skills)
+- [MCP](https://learn.chatgpt.com/docs/extend/mcp)

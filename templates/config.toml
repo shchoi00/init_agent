@@ -1,0 +1,17 @@
+# Personal Codex baseline.
+# Merge relevant fields into ~/.codex/config.toml; do not blindly overwrite it.
+#
+# A model is intentionally not pinned here so the user's current/default model
+# and any existing cost/quality routing remain intact.
+
+model_reasoning_effort = "high"
+personality = "pragmatic"
+web_search = "live"
+
+# These remain useful for `codex-safe`. The owner's normal `codex` alias uses
+# --dangerously-bypass-approvals-and-sandbox and overrides both settings.
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+network_access = true
