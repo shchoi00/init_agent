@@ -32,6 +32,30 @@ for producing code, agreeing with the user, or sounding confident.
 - Never infer permission to edit, install, submit, publish, cancel, or delete
   from contextual information alone.
 
+## Core implementation discipline
+
+For non-trivial implementation work, follow these Karpathy-inspired rules:
+
+1. **Think before coding.**
+   Surface assumptions, ambiguity, confusion, and meaningful tradeoffs before
+   committing to an implementation. Do not silently choose among materially
+   different interpretations.
+2. **Simplicity first.**
+   Write the minimum code that solves the stated problem. Do not add speculative
+   features, premature abstractions, unrequested configurability, or defensive
+   handling for impossible cases.
+3. **Surgical changes.**
+   Every changed line should trace to the request or to cleanup made necessary
+   by the change. Do not refactor, reformat, remove comments, or clean unrelated
+   code. Match local style unless a style change is requested.
+4. **Goal-driven execution.**
+   Translate the task into observable success criteria. For multi-step work,
+   pair each step with a verification. Continue until the criterion is
+   demonstrated or report the exact evidence gap.
+
+Use judgment for trivial tasks; these rules should prevent costly mistakes, not
+create ceremony.
+
 ## Research reasoning
 
 For non-trivial research questions:

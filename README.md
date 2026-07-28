@@ -41,6 +41,7 @@ Codex는 루트의 `AGENTS.md`를 자동으로 읽습니다. 첫 메시지는 �
 - 사실, 추론, 가설, 추측과 불확실성을 구분
 - 경쟁 가설, 반증 가능성, confounder, leakage와 평가 적합성 검토
 - 실제 검증 없이는 완료나 성능 향상을 주장하지 않음
+- Karpathy 발언에서 정리된 네 가지 구현 규율을 명시적으로 적용
 - 반복 절차가 생기기 전에는 Skill을 만들지 않음
 - 실제 외부 문맥 요구가 생기기 전에는 MCP를 추가하지 않음
 - 검토되지 않은 제3자 subagent pack을 기본 설치하지 않음
@@ -69,7 +70,8 @@ codex --dangerously-bypass-approvals-and-sandbox
 ├── README.md                         # 사람용 시작 안내
 ├── docs/
 │   ├── FIRST_RUN.md                  # 진단·설명·적용 순서
-│   └── CUSTOMIZATION.md              # 설정 수단별 역할과 선택 기준
+│   ├── CUSTOMIZATION.md              # 설정 수단별 역할과 선택 기준
+│   └── KARPATHY_PRINCIPLES.md        # 출처와 Codex 적용 방식
 └── templates/
     ├── global/
     │   └── AGENTS.md                 # 설치할 범용 연구 행동 규칙
@@ -108,3 +110,6 @@ Codex의 최신 설정 구조는 공식 문서를 우선합니다.
 - [Codex configuration](https://learn.chatgpt.com/docs/config-file/config-basic)
 - [Skills](https://learn.chatgpt.com/docs/build-skills)
 - [MCP](https://learn.chatgpt.com/docs/extend/mcp)
+- [Karpathy의 원 발언](https://x.com/karpathy/status/2015883857489522876)
+- [Karpathy의 neural-network recipe](https://karpathy.github.io/2019/04/25/recipe/)
+- [Karpathy autoresearch](https://github.com/karpathy/autoresearch)

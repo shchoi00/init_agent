@@ -30,6 +30,7 @@ Read these files before recommending changes:
 - `README.md`
 - `docs/FIRST_RUN.md`
 - `docs/CUSTOMIZATION.md`
+- `docs/KARPATHY_PRINCIPLES.md`
 - `templates/global/AGENTS.md`
 - `templates/config.toml`
 - `templates/shell/codex-aliases.sh`
@@ -71,6 +72,8 @@ ones.
 Unless the user changes their preference, recommend:
 
 - the research-engineering behavior in `templates/global/AGENTS.md`,
+- the four Karpathy-inspired implementation disciplines documented in
+  `docs/KARPATHY_PRINCIPLES.md`,
 - high reasoning effort without unnecessarily pinning a model name,
 - live web access when current external information is needed,
 - no new skill until a workflow actually repeats,
